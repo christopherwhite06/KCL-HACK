@@ -1,0 +1,56 @@
+export const PROFILES = [
+  {
+    id: 1, name: "Jasmine K.", age: 20, course: "Computer Science", year: "2nd Year",
+    uni: "University of Manchester", budget: "£550–£700/mo", moveIn: "Sept 2025",
+    bio: "Night owl coder, clean kitchen obsessive, love hosting film nights. Looking for housemates who won't judge my 2am cooking.",
+    compatibility: 94, lifestyleMatch: 97, propertyMatch: 88,
+    tags: ["Night Owl", "Clean Freak", "Social", "Cyclist"],
+    epcGrade: "B", floodRisk: "Low", hmoStatus: "Approved Zone",
+    rentFairness: "+2% avg", commuteMin: 8, avatar: "JK", color: "#FF6B6B",
+    societies: ["Hackathon Society", "Film Club"], cleanliness: 4, guests: "Occasionally",
+    smoking: false, drinking: true, studyStyle: "At home",
+  },
+  {
+    id: 2, name: "Marcus T.", age: 22, course: "Architecture", year: "3rd Year",
+    uni: "University of Manchester", budget: "£600–£750/mo", moveIn: "Aug 2025",
+    bio: "Library warrior by day, amateur chef by night. Need quiet study space but always down for a Sunday roast.",
+    compatibility: 82, lifestyleMatch: 78, propertyMatch: 91,
+    tags: ["Early Bird", "Chef", "Quiet", "Gym Goer"],
+    epcGrade: "C", floodRisk: "Low", hmoStatus: "Approved Zone",
+    rentFairness: "-4% avg", commuteMin: 12, avatar: "MT", color: "#4ECDC4",
+    societies: ["Architecture Society", "Food Society"], cleanliness: 3, guests: "Rarely",
+    smoking: false, drinking: false, studyStyle: "Library",
+  },
+  {
+    id: 3, name: "Priya S.", age: 21, course: "Medicine", year: "2nd Year",
+    uni: "University of Manchester", budget: "£500–£650/mo", moveIn: "Sept 2025",
+    bio: "Med student with erratic schedules. Respectful of sleep and space. Absolutely love plants and a clean home.",
+    compatibility: 76, lifestyleMatch: 72, propertyMatch: 85,
+    tags: ["Eco-Conscious", "Plant Mum", "Clean", "Introvert"],
+    epcGrade: "A", floodRisk: "Low", hmoStatus: "Restricted Zone",
+    rentFairness: "+6% avg", commuteMin: 6, avatar: "PS", color: "#A29BFE",
+    societies: ["MedSoc", "Environmental Society"], cleanliness: 5, guests: "Rarely",
+    smoking: false, drinking: false, studyStyle: "At home",
+  },
+  {
+    id: 4, name: "Leo B.", age: 21, course: "Business", year: "2nd Year",
+    uni: "University of Manchester", budget: "£550–£700/mo", moveIn: "Sept 2025",
+    bio: "Social butterfly who knows everyone. Tidy, respectful, and always brings energy to the house.",
+    compatibility: 71, lifestyleMatch: 80, propertyMatch: 65,
+    tags: ["Social", "Tidy", "Night Out", "Foodie"],
+    epcGrade: "C", floodRisk: "Medium", hmoStatus: "Approved Zone",
+    rentFairness: "-1% avg", commuteMin: 15, avatar: "LB", color: "#FDCB6E",
+    societies: ["Business Society", "Tennis Club"], cleanliness: 3, guests: "Often",
+    smoking: false, drinking: true, studyStyle: "Library",
+  },
+];
+
+export const LIKED_YOU = [
+  { id: 10, name: "Sophie R.", age: 20, course: "Law", year: "2nd Year", avatar: "SR", color: "#fd79a8", compatibility: 79, bio: "Quiet studier, loves a clean house." },
+  { id: 11, name: "Amir H.", age: 22, course: "Engineering", year: "3rd Year", avatar: "AH", color: "#00cec9", compatibility: 85, bio: "Morning person, huge football fan, very tidy." },
+  { id: 12, name: "Chloe W.", age: 21, course: "Psychology", year: "2nd Year", avatar: "CW", color: "#e17055", compatibility: 71, bio: "Loves cooking for housemates, flexible schedule." },
+];
+
+export const EPC_COLORS: Record<string, string> = {
+  A: "#00a550", B: "#50b747", C: "#b2d234", D: "#fff200", E: "#f7941d", F: "#f15a29"
+};
