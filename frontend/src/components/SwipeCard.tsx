@@ -50,10 +50,12 @@ export default function SwipeCard({ profile, onSwipe, zIndex, offset, t }: Swipe
         transition: dragging ? "none" : "transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275)",
         cursor: dragging ? "grabbing" : "grab",
         zIndex, userSelect: "none", touchAction: "none",
-        borderRadius: 24,
-        background: t.swipeCard,
-        border: `1px solid ${t.border}`,
-        boxShadow: t.shadow,
+        borderRadius: 20,
+        background: "rgba(13,17,23,0.88)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        border: "1px solid rgba(255,255,255,0.1)",
+        boxShadow: "0 24px 48px rgba(0,0,0,0.4)",
         display: "flex", flexDirection: "column", overflow: "hidden",
       }}
     >
@@ -98,7 +100,7 @@ export default function SwipeCard({ profile, onSwipe, zIndex, offset, t }: Swipe
       </div>
 
       {/* Content */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "18px 20px" }}>
+      <div className="swipe-card-content" style={{ flex: 1, overflowY: "auto", padding: "18px 20px" }}>
 
         {/* PROFILE TAB */}
         {tab === "profile" && (

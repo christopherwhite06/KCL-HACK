@@ -1,13 +1,38 @@
-# KCL-HACK (Roomr)
+# Roomr (KCL-HACK)
 
-Monorepo with frontend (Vite + React) and backend (Node) for the Roomr app.
+A **roommate and property matching app** — swipe-style discovery for finding roommates and exploring housing insights, built for the KCL Hackathon. Think Tinder for student housing: match with potential flatmates and view property/area insights powered by UK PropTech data.
 
-## Layout
+## What it does
 
-- **frontend/** – Vite + React + TypeScript app
-- **backend/** – Node HTTP API; Scansan integration with cache and retries
+- **Explore** — Swipe through roommate profiles (compatibility, lifestyle, property preferences).
+- **Matches** — See who you’ve matched with and message them.
+- **Liked** — People who liked you (connect from here).
+- **Insights** — Housing insights (flood risk, EPC, HMO, rent trends) powered by live datasets.
+- **Profile** — Your profile, theme (dark/light), and settings.
 
-## Setup
+The backend proxies the **Scansan** property/area API (search, summaries, listings). The frontend can use **Supabase** for storing roommate profiles and likes (session-based).
+
+## Tech stack
+
+| Layer    | Stack |
+|----------|--------|
+| **Frontend** | React 19, TypeScript, Vite 7 |
+| **UI**       | Material UI (MUI) 6, Emotion |
+| **Map**      | Leaflet, react-leaflet |
+| **Data**     | Supabase (optional) |
+| **Backend**  | Node.js (plain HTTP server) |
+| **APIs**     | Scansan API (proxy with cache + retries) |
+
+## Requirements
+
+- **Node.js** 18+ (LTS recommended)
+- **npm** (comes with Node)
+
+See `requirements.txt` for a full list of dependencies and install commands.
+
+## How to run
+
+### 1. Install dependencies
 
 From the repo root:
 
@@ -15,9 +40,22 @@ From the repo root:
 npm run install:all
 ```
 
-This installs root deps plus `frontend` and `backend` dependencies.
+This installs root, frontend, and backend dependencies.
 
-## Development
+### 2. Environment (optional)
+
+Create a `.env` in the repo root if you use Scansan or Supabase:
+
+```env
+# Scansan (backend)
+SCANSAN_API_KEY=your-key
+
+# Supabase (frontend)
+VITE_SUPABASE_URL=your-project-url
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+### 3. Start the app
 
 From the repo root:
 
@@ -25,35 +63,42 @@ From the repo root:
 npm run dev
 ```
 
-This starts both:
+This starts:
 
-- **Frontend** – Vite dev server (e.g. http://localhost:5173)
-- **Backend** – API server (http://localhost:3001); `GET /api/health` returns `{ ok: true }`
+- **Frontend** — [http://localhost:5173](http://localhost:5173) (Vite)
+- **Backend** — [http://localhost:3001](http://localhost:3001) (Node API)
 
-### Backend – Scansan API
+### Run frontend or backend only
 
-The backend proxies the [Scansan PAA API](https://docs.scansan.com/v1/docs) with caching and retries:
+```bash
+npm run dev --prefix frontend
+npm run dev --prefix backend
+```
 
-- **Env (root `.env` or `backend/.env`):** `SCANSAN_API_KEY` (required). Optional: `SCANSAN_BASE_URL` (default `https://api.scansan.com`), `SCANSAN_AUTH_HEADER` (default `X-Auth-Token`), `SCANSAN_AUTH_BEARER=true` to use `Authorization: Bearer` instead.
-- **Cache:** Responses are stored under `backend/.data/scansan-cache.json`. Repeated requests for the same path and params are served from cache.
-- **Retries:** On HTTP 429 (rate limit) or 5xx, the backend retries up to 5 times with a 1 second delay before each retry, then returns an error for that request.
+## Backend API
 
-**Usage:** `GET http://localhost:3001/api/scansan?path=<path>&<param>=<value>` — `path` is the API path (e.g. `/v1/area_codes/search`); all other query params are forwarded to Scansan.
+- **Health:** `GET http://localhost:3001/api/health` → `{ ok: true }`
+- **Scansan proxy:** `GET http://localhost:3001/api/scansan?path=<path>&<param>=<value>`
+  - Example: `?path=/v1/area_codes/search&area_name=London`
+  - Responses are cached under `backend/.data/scansan-cache.json`.
 
-**Examples:**
-- `GET http://localhost:3001/api/scansan?path=/v1/area_codes/search&area_name=London` — area search
-- `GET http://localhost:3001/api/scansan?path=/v1/area_codes/SW1A/summary` — area summary
-- Response: `{ ok: true, cached: false, data: ... }` or `{ error: "...", statusCode: ... }` on failure.
+## Database (Supabase)
 
-To run only one:
+Optional. If you use Supabase:
 
-- `npm run dev --prefix frontend`
-- `npm run dev --prefix backend`
+1. Run the SQL in `supabase/migrations/001_core_tables.sql` in the Supabase SQL Editor.
+2. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in `.env`.
 
-### Database (Supabase)
+If `roommate_profiles` is empty, the app seeds 20 mock profiles on first load. Likes are stored per browser (session in `localStorage`).
 
-The app uses Supabase for roommate profiles and likes (session-based).
+## Project layout
 
-- **Env (root `.env`):** `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. Add these so the frontend can connect.
-- **Schema:** Run the SQL in `supabase/migrations/001_core_tables.sql` in the Supabase SQL Editor (Dashboard → SQL Editor). This creates `roommate_profiles`, `user_sessions`, `likes`, and RLS policies.
-- If the `roommate_profiles` table is empty, the app seeds it with 20 mock profiles on first load. Likes are stored per browser (session id in `localStorage`).
+```
+KCL-HACK/
+├── frontend/          # Vite + React app (MUI, Leaflet, Supabase)
+├── backend/           # Node API (Scansan proxy)
+├── supabase/
+│   └── migrations/   # SQL schema
+├── package.json       # Root scripts (dev, install:all)
+└── requirements.txt   # Dependency list + install commands
+```

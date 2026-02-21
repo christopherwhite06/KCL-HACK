@@ -1,8 +1,15 @@
 import type { Theme } from "../themes";
+import { LOCATION_OPTIONS } from "../lib/scansan";
 
-type Props = { t: Theme; theme: "dark" | "light"; setTheme: (t: "dark" | "light") => void };
+type Props = {
+  t: Theme;
+  theme: "dark" | "light";
+  setTheme: (t: "dark" | "light") => void;
+  searchLocation: string;
+  setSearchLocation: (v: string) => void;
+};
 
-export default function ProfileScreen({ t, theme, setTheme }: Props) {
+export default function ProfileScreen({ t, theme, setTheme, searchLocation, setSearchLocation }: Props) {
   return (
     <div style={{ padding: "20px", overflowY: "auto", height: "100%", boxSizing: "border-box" }}>
       <div style={{ fontSize: 20, fontWeight: 800, color: t.text, marginBottom: 20 }}>Profile & Settings</div>
@@ -14,6 +21,32 @@ export default function ProfileScreen({ t, theme, setTheme }: Props) {
           <div style={{ fontWeight: 700, color: t.text, fontSize: 16 }}>Your Profile</div>
           <div style={{ fontSize: 12, color: t.textSub }}>University of Manchester · 2nd Year</div>
         </div>
+      </div>
+
+      {/* Search location – where to load properties to rent */}
+      <div style={{ background: t.surface, borderRadius: 16, padding: 16, marginBottom: 12, border: `1px solid ${t.border}` }}>
+        <div style={{ fontWeight: 600, color: t.text, fontSize: 14, marginBottom: 8 }}>Property search location</div>
+        <div style={{ fontSize: 12, color: t.textMuted, marginBottom: 10 }}>Where to show properties for rent (London areas)</div>
+        <select
+          value={searchLocation}
+          onChange={(e) => setSearchLocation(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "10px 12px",
+            borderRadius: 10,
+            border: `1px solid ${t.border}`,
+            background: t.bg,
+            color: t.text,
+            fontSize: 14,
+            cursor: "pointer",
+          }}
+        >
+          {LOCATION_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Theme toggle */}

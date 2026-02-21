@@ -19,7 +19,7 @@ export default function LikedYouScreen({ t, onMatch }: Props) {
               <div style={{ fontSize: 11, color: t.textMuted, marginTop: 3 }}>{u.bio}</div>
               <div style={{ fontSize: 11, color: t.accent, marginTop: 4, fontWeight: 600 }}>{u.compatibility}% match</div>
             </div>
-            <button onClick={() => onMatch(u.id)} style={{ padding: "8px 14px", borderRadius: 10, border: "none", background: t.accentBg, border2: `1px solid ${t.accentBorder}`, color: t.accent, fontWeight: 600, fontSize: 13, cursor: "pointer" } as React.CSSProperties}>
+            <button onClick={() => onMatch(u.id)} style={{ padding: "8px 14px", borderRadius: 10, border: `1px solid ${t.accentBorder}`, background: t.accentBg, color: t.accent, fontWeight: 600, fontSize: 13, cursor: "pointer" }}>
               Connect
             </button>
           </div>
