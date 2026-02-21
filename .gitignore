@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Env (contains secrets)
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+build/
+
+# Logs / cache
+*.log
+.tmp
+.cache
+
+# Backend cache (Scansan)
+backend/.data/

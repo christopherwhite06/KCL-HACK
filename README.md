@@ -1,73 +1,59 @@
-# React + TypeScript + Vite
+# KCL-HACK (Roomr)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Monorepo with frontend (Vite + React) and backend (Node) for the Roomr app.
 
-Currently, two official plugins are available:
+## Layout
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **frontend/** – Vite + React + TypeScript app
+- **backend/** – Node HTTP API; Scansan integration with cache and retries
 
-## React Compiler
+## Setup
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+From the repo root:
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run install:all
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+This installs root deps plus `frontend` and `backend` dependencies.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Development
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+From the repo root:
+
+```bash
+npm run dev
 ```
+
+This starts both:
+
+- **Frontend** – Vite dev server (e.g. http://localhost:5173)
+- **Backend** – API server (http://localhost:3001); `GET /api/health` returns `{ ok: true }`
+
+### Backend – Scansan API
+
+The backend proxies the [Scansan PAA API](https://docs.scansan.com/v1/docs) with caching and retries:
+
+- **Env (root `.env` or `backend/.env`):** `SCANSAN_API_KEY` (required). Optional: `SCANSAN_BASE_URL` (default `https://api.scansan.com`), `SCANSAN_AUTH_HEADER` (default `X-Auth-Token`), `SCANSAN_AUTH_BEARER=true` to use `Authorization: Bearer` instead.
+- **Cache:** Responses are stored under `backend/.data/scansan-cache.json`. Repeated requests for the same path and params are served from cache.
+- **Retries:** On HTTP 429 (rate limit) or 5xx, the backend retries up to 5 times with a 1 second delay before each retry, then returns an error for that request.
+
+**Usage:** `GET http://localhost:3001/api/scansan?path=<path>&<param>=<value>` — `path` is the API path (e.g. `/v1/area_codes/search`); all other query params are forwarded to Scansan.
+
+**Examples:**
+- `GET http://localhost:3001/api/scansan?path=/v1/area_codes/search&area_name=London` — area search
+- `GET http://localhost:3001/api/scansan?path=/v1/area_codes/SW1A/summary` — area summary
+- Response: `{ ok: true, cached: false, data: ... }` or `{ error: "...", statusCode: ... }` on failure.
+
+To run only one:
+
+- `npm run dev --prefix frontend`
+- `npm run dev --prefix backend`
+
+### Database (Supabase)
+
+The app uses Supabase for roommate profiles and likes (session-based).
+
+- **Env (root `.env`):** `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. Add these so the frontend can connect.
+- **Schema:** Run the SQL in `supabase/migrations/001_core_tables.sql` in the Supabase SQL Editor (Dashboard → SQL Editor). This creates `roommate_profiles`, `user_sessions`, `likes`, and RLS policies.
+- If the `roommate_profiles` table is empty, the app seeds it with 20 mock profiles on first load. Likes are stored per browser (session id in `localStorage`).
