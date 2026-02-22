@@ -51,11 +51,11 @@ export default function SwipeCard({ profile, onSwipe, zIndex, offset, t }: Swipe
         cursor: dragging ? "grabbing" : "grab",
         zIndex, userSelect: "none", touchAction: "none",
         borderRadius: 20,
-        background: "rgba(13,17,23,0.88)",
+        background: t.card,
         backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
-        border: "1px solid rgba(255,255,255,0.1)",
-        boxShadow: "0 24px 48px rgba(0,0,0,0.4)",
+        border: `1px solid ${t.borderStrong}`,
+        boxShadow: t.shadow,
         display: "flex", flexDirection: "column", overflow: "hidden",
       }}
     >
@@ -159,7 +159,7 @@ export default function SwipeCard({ profile, onSwipe, zIndex, offset, t }: Swipe
                     background: g === profile.epcGrade ? EPC_COLORS[g] : `${EPC_COLORS[g]}33`,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     fontSize: 11, fontWeight: 800,
-                    color: g === profile.epcGrade ? "white" : "rgba(255,255,255,0.3)",
+                    color: g === profile.epcGrade ? "white" : t.textMuted,
                     transform: g === profile.epcGrade ? "scaleY(1.15)" : "none",
                     transition: "all 0.2s",
                   }}>{g}</div>

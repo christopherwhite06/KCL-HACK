@@ -65,11 +65,11 @@ export default function HouseSwipeCard({ house, onSwipe, t }: Props) {
         touchAction: "none",
         borderRadius: 20,
         overflow: "hidden",
-        background: "rgba(13,17,23,0.88)",
+        background: t.card,
         backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
-        border: "1px solid rgba(255,255,255,0.1)",
-        boxShadow: "0 24px 48px rgba(0,0,0,0.4)",
+        border: `1px solid ${t.borderStrong}`,
+        boxShadow: t.shadow,
         display: "flex",
         flexDirection: "column",
       }}
@@ -77,7 +77,7 @@ export default function HouseSwipeCard({ house, onSwipe, t }: Props) {
       <div style={{ position: "absolute", top: 12, left: 12, zIndex: 10, opacity: likeOp, transform: "rotate(-16deg)", border: "2px solid #00e5a0", borderRadius: 6, padding: "2px 10px", color: "#00e5a0", fontWeight: 800, fontSize: 14, pointerEvents: "none" }}>MATCH</div>
       <div style={{ position: "absolute", top: 12, right: 12, zIndex: 10, opacity: nopeOp, transform: "rotate(16deg)", border: "2px solid #ff4757", borderRadius: 6, padding: "2px 10px", color: "#ff4757", fontWeight: 800, fontSize: 14, pointerEvents: "none" }}>PASS</div>
 
-      <div style={{ aspectRatio: "4/3", background: "#1a1a2e", flexShrink: 0 }}>
+      <div style={{ aspectRatio: "4/3", background: t.surface, flexShrink: 0 }}>
         <img src={house.images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       </div>
       <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: 6 }}>

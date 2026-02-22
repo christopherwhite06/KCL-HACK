@@ -16,12 +16,13 @@ type Profile = (typeof PROFILES)[number];
 
 type Props = {
   t: Theme;
+  theme: "dark" | "light";
   mode: "roommates" | "properties";
   searchLocation: string;
   onMatch: (profile: Profile) => void;
 };
 
-export default function SwipeScreen({ t, mode, searchLocation, onMatch }: Props) {
+export default function SwipeScreen({ t, theme, mode, searchLocation, onMatch }: Props) {
   const [profileCards, setProfileCards] = useState([...PROFILES].reverse());
   const [houseCards, setHouseCards] = useState<House[]>([]);
   const [housesLoading, setHousesLoading] = useState(false);
@@ -125,6 +126,7 @@ export default function SwipeScreen({ t, mode, searchLocation, onMatch }: Props)
         interactive={false}
         showMarker={true}
         markerLabel={mapMarkerLabel}
+        isDark={theme === "dark"}
       />
 
       {/* Collapsible overlay: swipe down on the card to hide (top of card stays visible), swipe up to show */}
@@ -182,11 +184,11 @@ export default function SwipeScreen({ t, mode, searchLocation, onMatch }: Props)
                     alignItems: "center",
                     justifyContent: "center",
                     gap: 12,
-                    background: "rgba(13,17,23,0.75)",
+                    background: t.card,
                     backdropFilter: "blur(16px)",
                     WebkitBackdropFilter: "blur(16px)",
                     borderRadius: 20,
-                    border: "1px solid rgba(255,255,255,0.08)",
+                    border: `1px solid ${t.border}`,
                   }}
                 >
                   <div style={{ fontSize: 40 }}>✨</div>
@@ -234,11 +236,11 @@ export default function SwipeScreen({ t, mode, searchLocation, onMatch }: Props)
                     alignItems: "center",
                     justifyContent: "center",
                     gap: 12,
-                    background: "rgba(13,17,23,0.75)",
+                    background: t.card,
                     backdropFilter: "blur(16px)",
                     WebkitBackdropFilter: "blur(16px)",
                     borderRadius: 20,
-                    border: "1px solid rgba(255,255,255,0.08)",
+                    border: `1px solid ${t.border}`,
                   }}
                 >
                   <div style={{ fontSize: 24, color: t.textMuted }}>Loading properties…</div>
@@ -253,11 +255,11 @@ export default function SwipeScreen({ t, mode, searchLocation, onMatch }: Props)
                     alignItems: "center",
                     justifyContent: "center",
                     gap: 12,
-                    background: "rgba(13,17,23,0.75)",
+                    background: t.card,
                     backdropFilter: "blur(16px)",
                     WebkitBackdropFilter: "blur(16px)",
                     borderRadius: 20,
-                    border: "1px solid rgba(255,255,255,0.08)",
+                    border: `1px solid ${t.border}`,
                   }}
                 >
                   <div style={{ fontSize: 14, color: t.textMuted, textAlign: "center" }}>{housesError}</div>
@@ -288,11 +290,11 @@ export default function SwipeScreen({ t, mode, searchLocation, onMatch }: Props)
                     alignItems: "center",
                     justifyContent: "center",
                     gap: 12,
-                    background: "rgba(13,17,23,0.75)",
+                    background: t.card,
                     backdropFilter: "blur(16px)",
                     WebkitBackdropFilter: "blur(16px)",
                     borderRadius: 20,
-                    border: "1px solid rgba(255,255,255,0.08)",
+                    border: `1px solid ${t.border}`,
                   }}
                 >
                   <div style={{ fontSize: 40 }}>✨</div>

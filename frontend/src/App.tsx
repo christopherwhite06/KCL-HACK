@@ -11,6 +11,8 @@ import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import InsightsOutlinedIcon from "@mui/icons-material/InsightsOutlined";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import ApartmentIcon from "@mui/icons-material/Apartment";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
 import { THEMES } from "./themes";
 import type { Theme } from "./themes";
 import { PROFILES } from "./data";
@@ -24,21 +26,26 @@ type Profile = (typeof PROFILES)[number];
 
 type NavValue = "home" | "matches" | "liked" | "insights" | "profile";
 
-const glassBar = {
-  background: "rgba(13,17,23,0.85)",
-  backdropFilter: "blur(20px)",
-  WebkitBackdropFilter: "blur(20px)",
-  borderColor: "rgba(255,255,255,0.08)",
-};
-
-export default function App() {
+export default function App({
+  theme,
+  setTheme,
+}: {
+  theme: "dark" | "light";
+  setTheme: (v: "dark" | "light") => void;
+}) {
   const [screen, setScreen] = useState<NavValue>("home");
   const [discoverMode, setDiscoverMode] = useState<"roommates" | "properties">("roommates");
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [matches, setMatches] = useState<Profile[]>([]);
   const [searchLocation, setSearchLocation] = useState<string>("London");
 
   const t: Theme = THEMES[theme];
+
+  const glassBar = {
+    background: theme === "dark" ? "rgba(13,17,23,0.85)" : "rgba(255,255,255,0.9)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    borderColor: theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
+  };
 
   const handleMatch = (profile: Profile) => {
     setMatches((prev) => [...prev, profile]);
@@ -58,14 +65,14 @@ export default function App() {
         overflow: "hidden",
       }}
     >
-      {/* Top bar – glass AppBar */}
+      {/* Top bar – glass AppBar; theme toggle on main page (visible in header) */}
       <AppBar
         position="static"
         elevation={0}
         sx={{
           ...glassBar,
           borderBottom: "1px solid",
-          borderColor: "rgba(255,255,255,0.08)",
+          borderColor: t.borderStrong,
           paddingTop: "env(safe-area-inset-top, 0px)",
         }}
       >
@@ -81,11 +88,29 @@ export default function App() {
           <Box sx={{ flex: 1 }} />
           <IconButton
             size="medium"
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            sx={{
+              bgcolor: t.accentBg,
+              border: `1px solid ${t.accentBorder}`,
+              color: t.accent,
+              mr: 1,
+              "&:hover": { bgcolor: theme === "dark" ? "rgba(0,229,160,0.18)" : "rgba(0,196,140,0.18)" },
+            }}
+          >
+            {theme === "dark" ? (
+              <LightModeIcon fontSize="small" />
+            ) : (
+              <DarkModeIcon fontSize="small" />
+            )}
+          </IconButton>
+          <IconButton
+            size="medium"
             aria-label="Notifications"
             sx={{
-              bgcolor: "rgba(0,229,160,0.12)",
-              border: "1px solid rgba(0,229,160,0.3)",
-              "&:hover": { bgcolor: "rgba(0,229,160,0.18)" },
+              bgcolor: t.accentBg,
+              border: `1px solid ${t.accentBorder}`,
+              "&:hover": { bgcolor: theme === "dark" ? "rgba(0,229,160,0.18)" : "rgba(0,196,140,0.18)" },
             }}
           >
             <NotificationsOutlinedIcon fontSize="small" />
@@ -96,7 +121,7 @@ export default function App() {
       {/* Main content – full width so map/bars extend; card size is fixed in SwipeScreen */}
       <Box sx={{ flex: 1, minHeight: 0, minWidth: 0, width: "100%", overflow: "hidden" }}>
         {screen === "home" && (
-          <SwipeScreen t={t} mode={discoverMode} searchLocation={searchLocation} onMatch={handleMatch} />
+          <SwipeScreen t={t} theme={theme} mode={discoverMode} searchLocation={searchLocation} onMatch={handleMatch} />
         )}
         {screen === "matches" && <MatchesScreen t={t} matches={matches} />}
         {screen === "liked" && <LikedYouScreen t={t} onMatch={() => {}} />}
@@ -106,13 +131,13 @@ export default function App() {
         )}
       </Box>
 
-      {/* Bottom bar – glass, Roommates | Properties toggle in center */}
+      {/* Bottom bar – glass, theme-aware */}
       <Box
         sx={{
           flexShrink: 0,
           display: "flex",
           alignItems: "stretch",
-          borderTop: "1px solid rgba(255,255,255,0.08)",
+          borderTop: `1px solid ${t.borderStrong}`,
           ...glassBar,
           paddingBottom: "env(safe-area-inset-bottom, 0px)",
           minHeight: 64,
@@ -131,9 +156,9 @@ export default function App() {
             bgcolor: "transparent",
             border: "none",
             cursor: "pointer",
-            color: screen === "home" ? "primary.main" : "rgba(255,255,255,0.45)",
+            color: screen === "home" ? "primary.main" : t.textMuted,
             py: 1.5,
-            "&:hover": { bgcolor: "rgba(255,255,255,0.04)" },
+            "&:hover": { bgcolor: t.surfaceHover },
           }}
         >
           <HomeOutlinedIcon sx={{ fontSize: 22 }} />
@@ -153,9 +178,9 @@ export default function App() {
             bgcolor: "transparent",
             border: "none",
             cursor: "pointer",
-            color: screen === "matches" ? "primary.main" : "rgba(255,255,255,0.45)",
+            color: screen === "matches" ? "primary.main" : t.textMuted,
             py: 1.5,
-            "&:hover": { bgcolor: "rgba(255,255,255,0.04)" },
+            "&:hover": { bgcolor: t.surfaceHover },
           }}
         >
           <PeopleOutlineIcon sx={{ fontSize: 22 }} />
@@ -186,11 +211,11 @@ export default function App() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: discoverMode === "roommates" ? "#0d1117" : "rgba(255,255,255,0.5)",
-              bgcolor: discoverMode === "roommates" ? "primary.main" : "rgba(255,255,255,0.06)",
+              color: discoverMode === "roommates" ? "primary.contrastText" : t.textSub,
+              bgcolor: discoverMode === "roommates" ? "primary.main" : t.surface,
               transition: "all 0.2s",
               "&:hover": {
-                bgcolor: discoverMode === "roommates" ? "primary.dark" : "rgba(255,255,255,0.1)",
+                bgcolor: discoverMode === "roommates" ? "primary.dark" : t.surfaceHover,
               },
             }}
           >
@@ -209,11 +234,11 @@ export default function App() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: discoverMode === "properties" ? "#0d1117" : "rgba(255,255,255,0.5)",
-              bgcolor: discoverMode === "properties" ? "primary.main" : "rgba(255,255,255,0.06)",
+              color: discoverMode === "properties" ? "primary.contrastText" : t.textSub,
+              bgcolor: discoverMode === "properties" ? "primary.main" : t.surface,
               transition: "all 0.2s",
               "&:hover": {
-                bgcolor: discoverMode === "properties" ? "primary.dark" : "rgba(255,255,255,0.1)",
+                bgcolor: discoverMode === "properties" ? "primary.dark" : t.surfaceHover,
               },
             }}
           >
@@ -234,9 +259,9 @@ export default function App() {
             bgcolor: "transparent",
             border: "none",
             cursor: "pointer",
-            color: screen === "insights" ? "primary.main" : "rgba(255,255,255,0.45)",
+            color: screen === "insights" ? "primary.main" : t.textMuted,
             py: 1.5,
-            "&:hover": { bgcolor: "rgba(255,255,255,0.04)" },
+            "&:hover": { bgcolor: t.surfaceHover },
           }}
         >
           <InsightsOutlinedIcon sx={{ fontSize: 22 }} />
@@ -256,9 +281,9 @@ export default function App() {
             bgcolor: "transparent",
             border: "none",
             cursor: "pointer",
-            color: screen === "profile" ? "primary.main" : "rgba(255,255,255,0.45)",
+            color: screen === "profile" ? "primary.main" : t.textMuted,
             py: 1.5,
-            "&:hover": { bgcolor: "rgba(255,255,255,0.04)" },
+            "&:hover": { bgcolor: t.surfaceHover },
           }}
         >
           <PersonOutlineIcon sx={{ fontSize: 22 }} />

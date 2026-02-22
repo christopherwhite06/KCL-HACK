@@ -113,3 +113,11 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, () => {
   console.log(`Backend running at http://localhost:${PORT}`);
 });
+
+server.on("error", (err) => {
+  if (err.code === "EADDRINUSE") {
+    console.error(`Port ${PORT} is already in use. Stop the other process or set PORT=3002 (and update frontend proxy if needed).`);
+    process.exit(1);
+  }
+  throw err;
+});
