@@ -1,73 +1,104 @@
-# React + TypeScript + Vite
+# Roomr (KCL-HACK)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A **roommate and property matching app** — swipe-style discovery for finding roommates and exploring housing insights, built for the KCL Hackathon. Think Tinder for student housing: match with potential flatmates and view property/area insights powered by UK PropTech data.
 
-Currently, two official plugins are available:
+## What it does
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Explore** — Swipe through roommate profiles (compatibility, lifestyle, property preferences).
+- **Matches** — See who you’ve matched with and message them.
+- **Liked** — People who liked you (connect from here).
+- **Insights** — Housing insights (flood risk, EPC, HMO, rent trends) powered by live datasets.
+- **Profile** — Your profile, theme (dark/light), and settings.
 
-## React Compiler
+The backend proxies the **Scansan** property/area API (search, summaries, listings). The frontend can use **Supabase** for storing roommate profiles and likes (session-based).
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+## Tech stack
 
-## Expanding the ESLint configuration
+| Layer    | Stack |
+|----------|--------|
+| **Frontend** | React 19, TypeScript, Vite 7 |
+| **UI**       | Material UI (MUI) 6, Emotion |
+| **Map**      | Leaflet, react-leaflet |
+| **Data**     | Supabase (optional) |
+| **Backend**  | Node.js (plain HTTP server) |
+| **APIs**     | Scansan API (proxy with cache + retries) |
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Requirements
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Node.js** 18+ (LTS recommended)
+- **npm** (comes with Node)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+See `requirements.txt` for a full list of dependencies and install commands.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## How to run
+
+### 1. Install dependencies
+
+From the repo root:
+
+```bash
+npm run install:all
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+This installs root, frontend, and backend dependencies.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 2. Environment (optional)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Create a `.env` in the repo root if you use Scansan or Supabase:
+
+```env
+# Scansan (backend)
+SCANSAN_API_KEY=your-key
+
+# Supabase (frontend)
+VITE_SUPABASE_URL=your-project-url
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+### 3. Start the app
+
+From the repo root:
+
+```bash
+npm run dev
+```
+
+This starts:
+
+- **Frontend** — [http://localhost:5173](http://localhost:5173) (Vite)
+- **Backend** — [http://localhost:3001](http://localhost:3001) (Node API)
+
+### Run frontend or backend only
+
+```bash
+npm run dev --prefix frontend
+npm run dev --prefix backend
+```
+
+## Backend API
+
+- **Health:** `GET http://localhost:3001/api/health` → `{ ok: true }`
+- **Scansan proxy:** `GET http://localhost:3001/api/scansan?path=<path>&<param>=<value>`
+  - Example: `?path=/v1/area_codes/search&area_name=London`
+  - Responses are cached under `backend/.data/scansan-cache.json`.
+
+## Database (Supabase)
+
+Optional. If you use Supabase:
+
+1. Run the SQL in `supabase/migrations/001_core_tables.sql` in the Supabase SQL Editor.
+2. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in `.env`.
+
+If `roommate_profiles` is empty, the app seeds 20 mock profiles on first load. Likes are stored per browser (session in `localStorage`).
+
+## Project layout
+
+```
+KCL-HACK/
+├── frontend/          # Vite + React app (MUI, Leaflet, Supabase)
+├── backend/           # Node API (Scansan proxy)
+├── supabase/
+│   └── migrations/   # SQL schema
+├── package.json       # Root scripts (dev, install:all)
+└── requirements.txt   # Dependency list + install commands
 ```
