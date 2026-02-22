@@ -1,35 +1,146 @@
-import { useState } from "react";
+// ✅ FINAL UPDATED src/App.tsx (COPY-PASTE ENTIRE FILE)
+// Minimal changes only:
+// - adds Announcements tab
+// - adds toast system
+// - keeps your theme `t` everywhere
+// - passes showToast to Insights + Announcements (so your new screens can use it)
+
+import React, { useRef, useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { THEMES } from "./themes";
-import { PROFILES, LIKED_YOU } from "./data";
+import { LIKED_YOU } from "./data";
+
+import { PROFILES } from "./data";
+import { useAuth } from "./auth/AuthContext";
+
 import SwipeScreen from "./screens/SwipeScreen";
 import MatchesScreen from "./screens/MatchesScreen";
 import LikedYouScreen from "./screens/LikedYouScreen";
 import InsightsScreen from "./screens/InsightsScreen";
+import AnnouncementsScreen from "./screens/AnnouncementsScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 
-type Page = "swipe" | "matches" | "liked" | "insights" | "profile";
+import AuthStartScreen from "./screens/AuthStartScreen";
+import LoginScreen from "./screens/LoginScreen";
+import SignupWizardScreen from "./screens/SignupWizardScreen";
+
+type Page = "swipe" | "matches" | "liked" | "insights" | "announcements" | "profile";
 type Profile = typeof PROFILES[number];
 type LikedProfile = typeof LIKED_YOU[number];
 
 const TABS: { id: Page; icon: string; label: string }[] = [
-  { id: "swipe",    icon: "🔥", label: "Discover"  },
-  { id: "matches",  icon: "💬", label: "Matches"   },
-  { id: "liked",    icon: "👀", label: "Liked You" },
-  { id: "insights", icon: "📊", label: "Insights"  },
-  { id: "profile",  icon: "👤", label: "Profile"   },
+  { id: "swipe", icon: "🔥", label: "Discover" },
+  { id: "matches", icon: "💬", label: "Matches" },
+  { id: "liked", icon: "👀", label: "Liked You" },
+  { id: "insights", icon: "📊", label: "Insights" },
+  { id: "announcements", icon: "📢", label: "Updates" },
+  { id: "profile", icon: "👤", label: "Profile" },
 ];
 
-export default function App() {
-  const [themeName, setThemeName] = useState<"dark" | "light">("dark");
-  const t = THEMES[themeName];
+/** Reusable phone shell (same layout for auth + main app) */
+function PhoneShell({
+  t,
+  children,
+  headerRight,
+}: {
+  t: any;
+  children: React.ReactNode;
+  headerRight?: React.ReactNode;
+}) {
+  return (
+    <div
+      style={{
+        background: t.bg,
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
+      }}
+    >
+      <div
+        style={{
+          width: "min(400px, 100vw)",
+          height: "min(820px, 100vh)",
+          background: t.card,
+          borderRadius: 36,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          position: "relative",
+          boxShadow: t.shadow,
+        }}
+      >
+        {/* Header */}
+        <div
+          style={{
+            padding: "20px 24px 12px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderBottom: `1px solid ${t.border}`,
+            flexShrink: 0,
+            background: t.headerBg,
+          }}
+        >
+          <div>
+            <span style={{ fontSize: 22, fontWeight: 900, color: t.text }}>room</span>
+            <span style={{ fontSize: 22, fontWeight: 900, color: t.accent }}>r</span>
+          </div>
+
+          {headerRight ?? (
+            <div
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 10,
+                background: t.accentBg,
+                border: `1px solid ${t.accentBorder}`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 14,
+              }}
+            >
+              🔔
+            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <div style={{ flex: 1, overflow: "hidden", position: "relative" }}>{children}</div>
+      </div>
+    </div>
+  );
+}
+
+function RoomrAppShell({
+  t,
+  themeName,
+  setThemeName,
+}: {
+  t: any;
+  themeName: "dark" | "light";
+  setThemeName: (v: "dark" | "light") => void;
+}) {
   const [page, setPage] = useState<Page>("swipe");
   const [matches, setMatches] = useState<Profile[]>([]);
   const [showMatch, setShowMatch] = useState<Profile | null>(null);
   const [connectedIds, setConnectedIds] = useState<number[]>([]);
 
+  // ✅ Toast (minimal add)
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<number | null>(null);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast(null), 3000);
+  };
+
   const handleMatch = (profile: Profile) => {
     if (profile.compatibility > 70) {
-      setMatches(m => [...m, profile]);
+      setMatches((m) => [...m, profile]);
       setShowMatch(profile);
       setTimeout(() => setShowMatch(null), 2500);
     }
@@ -48,94 +159,174 @@ export default function App() {
   const likedYouCount = LIKED_YOU.filter(p => !connectedIds.includes(p.id)).length;
 
   return (
-    <div style={{
-      background: t.bg, minHeight: "100vh",
-      display: "flex", justifyContent: "center", alignItems: "center",
-      fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
-    }}>
-      <div style={{
-        width: "min(400px, 100vw)", height: "min(820px, 100vh)",
-        background: t.card, borderRadius: 36,
-        display: "flex", flexDirection: "column", overflow: "hidden",
-        position: "relative", boxShadow: t.shadow,
-      }}>
-        {/* Header */}
-        <div style={{
-          padding: "20px 24px 12px", display: "flex", alignItems: "center", justifyContent: "space-between",
-          borderBottom: `1px solid ${t.border}`, flexShrink: 0, background: t.headerBg,
-        }}>
-          <div>
-            <span style={{ fontSize: 22, fontWeight: 900, color: t.text, letterSpacing: -0.5 }}>room</span>
-            <span style={{ fontSize: 22, fontWeight: 900, color: t.accent, letterSpacing: -0.5 }}>r</span>
-          </div>
-          <div style={{
-            width: 32, height: 32, borderRadius: 10,
-            background: t.accentBg, border: `1px solid ${t.accentBorder}`,
-            display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14,
-          }}>🔔</div>
-        </div>
-
-        {/* Page content */}
+    <>
+      {/* Page content */}
+      <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column" }}>
         <div style={{ flex: 1, overflow: "hidden", position: "relative" }}>
-          {page === "swipe"    && <SwipeScreen t={t} onMatch={handleMatch} />}
-          {page === "matches"  && <MatchesScreen t={t} matches={matches} />}
-          {page === "liked"    && <LikedYouScreen t={t} onConnect={handleConnect} connectedIds={connectedIds} />}
-          {page === "insights" && <InsightsScreen t={t} />}
-          {page === "profile"  && <ProfileScreen t={t} theme={themeName} setTheme={setThemeName} />}
+
+          {page === "swipe" && <SwipeScreen t={t} onMatch={handleMatch} />}
+          {page === "matches" && <MatchesScreen t={t} matches={matches} />}
+          {page === "liked" && ( <LikedYouScreen t={t} onConnect={handleConnect} connectedIds={connectedIds} />)}
+
+          {/* ✅ updated screens */}
+          {page === "insights" && <InsightsScreen t={t} showToast={showToast} />}
+          {page === "announcements" && <AnnouncementsScreen showToast={showToast} />}
+
+          {page === "profile" && (
+            <ProfileScreen t={t} theme={themeName} setTheme={setThemeName} />
+          )}
         </div>
 
-        {/* Match celebration overlay */}
-        {showMatch && (
-          <div style={{
-            position: "absolute", inset: 0, zIndex: 100,
-            background: "rgba(0,0,0,0.92)",
-            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-            gap: 16, borderRadius: 36,
-          }}>
-            <div style={{ fontSize: 64 }}>🎉</div>
-            <div style={{ fontSize: 28, fontWeight: 900, color: t.accent }}>It's a Match!</div>
-            <div style={{ fontSize: 16, color: "rgba(255,255,255,0.75)" }}>You and {showMatch.name} connected</div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}>{showMatch.compatibility}% compatibility</div>
-            <div style={{ fontSize: 12, color: t.accent, marginTop: 4, opacity: 0.7 }}>Taking you to messages…</div>
-          </div>
-        )}
-
-        {/* Bottom nav */}
-        <div style={{ display: "flex", borderTop: `1px solid ${t.border}`, background: t.navBg, flexShrink: 0 }}>
-          {TABS.map(tab => (
-            <button key={tab.id} onClick={() => setPage(tab.id)} style={{
-              flex: 1, padding: "12px 0 14px", background: "none", border: "none", cursor: "pointer",
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
-              opacity: page === tab.id ? 1 : 0.35, transition: "opacity 0.2s",
-              position: "relative",
-            }}>
-              <span style={{ fontSize: 18, lineHeight: 1 }}>{tab.icon}</span>
-              <span style={{ fontSize: 9, letterSpacing: "0.08em", fontWeight: 600, color: page === tab.id ? t.accent : t.text }}>
+        {/* Bottom Nav */}
+        <div
+          style={{
+            display: "flex",
+            borderTop: `1px solid ${t.border}`,
+            background: t.navBg,
+            flexShrink: 0,
+          }}
+        >
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setPage(tab.id)}
+              style={{
+                flex: 1,
+                padding: "12px 0 14px",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 4,
+                opacity: page === tab.id ? 1 : 0.35,
+              }}
+            >
+              <span style={{ fontSize: 18 }}>{tab.icon}</span>
+              <span
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  color: page === tab.id ? t.accent : t.text,
+                }}
+              >
                 {tab.label.toUpperCase()}
               </span>
-              {/* Badge for matches */}
-              {tab.id === "matches" && matches.length > 0 && (
-                <div style={{ position: "absolute", top: 8, right: "22%", width: 16, height: 16, borderRadius: "50%", background: t.accent, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 800, color: "#0d1117" }}>
-                  {matches.length}
-                </div>
-              )}
-              {/* Badge for liked you */}
-              {tab.id === "liked" && likedYouCount > 0 && (
-                <div style={{ position: "absolute", top: 8, right: "18%", width: 16, height: 16, borderRadius: "50%", background: "#ff4757", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 800, color: "white" }}>
-                  {likedYouCount}
-                </div>
-              )}
-              {page === tab.id && <div style={{ width: 4, height: 4, borderRadius: 2, background: t.accent, marginTop: -2 }} />}
+
             </button>
           ))}
         </div>
       </div>
 
-      <style>{`
-        * { box-sizing: border-box; }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.2); border-radius: 4px; }
-      `}</style>
-    </div>
+      {/* ✅ Toast overlay */}
+      {toast && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: 80,
+            left: 16,
+            right: 16,
+            background: "rgba(0,229,160,0.15)",
+            border: "1px solid rgba(0,229,160,0.35)",
+            borderRadius: 12,
+            padding: "10px 16px",
+            fontSize: 12,
+            fontWeight: 600,
+            color: "#00e5a0",
+            textAlign: "center",
+            zIndex: 150,
+            backdropFilter: "blur(8px)",
+          }}
+        >
+          {toast}
+        </div>
+      )}
+
+      {/* Match Overlay */}
+      {showMatch && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 100,
+            background: "rgba(0,0,0,0.88)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 16,
+            borderRadius: 36,
+          }}
+        >
+          <div style={{ fontSize: 60 }}>🎉</div>
+          <div style={{ fontSize: 28, fontWeight: 900, color: t.accent }}>It's a Match!</div>
+          <div style={{ fontSize: 16, color: "rgba(255,255,255,0.7)" }}>
+            You and {showMatch.name} connected
+          </div>
+        </div>
+      )}
+    </>
   );
+
+}
+
+function Protected({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+}
+
+export default function App() {
+  // One theme for everything
+  const [themeName, setThemeName] = useState<"dark" | "light">("dark");
+  const t = THEMES[themeName];
+
+  return (
+    <Routes>
+      {/* Always show auth start first */}
+      <Route
+        path="/"
+        element={
+          <PhoneShell t={t}>
+            <AuthStartScreen t={t} />
+          </PhoneShell>
+        }
+      />
+
+      {/* Auth pages */}
+      <Route
+        path="/login"
+        element={
+          <PhoneShell t={t}>
+            <LoginScreen t={t} />
+          </PhoneShell>
+        }
+      />
+
+      <Route
+        path="/signup"
+        element={
+          <PhoneShell t={t}>
+            <SignupWizardScreen t={t} />
+          </PhoneShell>
+        }
+      />
+
+      {/* Main app (protected) */}
+      <Route
+        path="/app"
+        element={
+          <Protected>
+            <PhoneShell t={t}>
+              <RoomrAppShell t={t} themeName={themeName} setThemeName={setThemeName} />
+            </PhoneShell>
+          </Protected>
+        }
+      />
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+
 }

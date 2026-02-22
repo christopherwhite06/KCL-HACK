@@ -1,7 +1,13 @@
+
 import { useState } from "react";
+
 import type { Theme } from "../themes";
 
-type Props = { t: Theme; theme: "dark" | "light"; setTheme: (t: "dark" | "light") => void };
+type Props = {
+  t: Theme;
+  theme: "dark" | "light";
+  setTheme: (t: "dark" | "light") => void;
+};
 
 type UserProfile = {
   name: string; age: string; course: string; year: string; uni: string;
@@ -263,4 +269,5 @@ export default function ProfileScreen({ t, theme, setTheme }: Props) {
       </div>
     </div>
   );
+
 }
