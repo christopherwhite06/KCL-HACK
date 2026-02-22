@@ -1,0 +1,40 @@
+# Roomr (KCL-HACK) – Requirements & dependencies
+# Install: Node.js 18+ and npm, then run from repo root:
+#
+#   npm run install:all
+#
+# That installs everything below. To install manually, run `npm install` in each of root, frontend, backend.
+
+# --- Root (monorepo) ---
+concurrently
+
+# --- Frontend (frontend/) ---
+# npm install --prefix frontend
+@emotion/react
+@emotion/styled
+@mui/icons-material
+@mui/material
+@supabase/supabase-js
+leaflet
+react
+react-dom
+react-leaflet
+
+# --- Backend (backend/) ---
+# npm install --prefix backend
+dotenv
+
+# --- Dev (frontend devDependencies) ---
+@eslint/js
+@types/leaflet
+@types/node
+@types/react
+@types/react-dom
+@vitejs/plugin-react-swc
+eslint
+eslint-plugin-react-hooks
+eslint-plugin-react-refresh
+globals
+typescript
+typescript-eslint
+vite
