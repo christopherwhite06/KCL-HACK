@@ -9,6 +9,11 @@ export const PROFILES = [
     rentFairness: "+2% avg", commuteMin: 8, avatar: "JK", color: "#FF6B6B",
     societies: ["Hackathon Society", "Film Club"], cleanliness: 4, guests: "Occasionally",
     smoking: false, drinking: true, studyStyle: "At home",
+
+    // NEW (replaces floodRisk + hmoStatus in UI)
+    bedroomsAvailable: 1,
+    nearestLandmark: "Piccadilly Station",
+    nearestLandmarkDistanceMin: 9,
   },
   {
     id: 2, name: "Marcus T.", age: 22, course: "Architecture", year: "3rd Year",
@@ -20,6 +25,11 @@ export const PROFILES = [
     rentFairness: "-4% avg", commuteMin: 12, avatar: "MT", color: "#4ECDC4",
     societies: ["Architecture Society", "Food Society"], cleanliness: 3, guests: "Rarely",
     smoking: false, drinking: false, studyStyle: "Library",
+
+    // NEW
+    bedroomsAvailable: 2,
+    nearestLandmark: "Oxford Road Station",
+    nearestLandmarkDistanceMin: 7,
   },
   {
     id: 3, name: "Priya S.", age: 21, course: "Medicine", year: "2nd Year",
@@ -31,6 +41,11 @@ export const PROFILES = [
     rentFairness: "+6% avg", commuteMin: 6, avatar: "PS", color: "#A29BFE",
     societies: ["MedSoc", "Environmental Society"], cleanliness: 5, guests: "Rarely",
     smoking: false, drinking: false, studyStyle: "At home",
+
+    // NEW
+    bedroomsAvailable: 1,
+    nearestLandmark: "Manchester Royal Infirmary",
+    nearestLandmarkDistanceMin: 6,
   },
   {
     id: 4, name: "Leo B.", age: 21, course: "Business", year: "2nd Year",
@@ -42,6 +57,11 @@ export const PROFILES = [
     rentFairness: "-1% avg", commuteMin: 15, avatar: "LB", color: "#FDCB6E",
     societies: ["Business Society", "Tennis Club"], cleanliness: 3, guests: "Often",
     smoking: false, drinking: true, studyStyle: "Library",
+
+    // NEW
+    bedroomsAvailable: 3,
+    nearestLandmark: "Arndale / High Street",
+    nearestLandmarkDistanceMin: 11,
   },
 ];
 

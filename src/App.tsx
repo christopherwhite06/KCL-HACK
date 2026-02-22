@@ -1,9 +1,3 @@
-// ✅ FINAL UPDATED src/App.tsx (COPY-PASTE ENTIRE FILE)
-// Minimal changes only:
-// - adds Announcements tab
-// - adds toast system
-// - keeps your theme `t` everywhere
-// - passes showToast to Insights + Announcements (so your new screens can use it)
 
 import React, { useRef, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
