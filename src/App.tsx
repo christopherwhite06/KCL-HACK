@@ -1,4 +1,11 @@
-import { useState } from "react";
+// ✅ FINAL UPDATED src/App.tsx (COPY-PASTE ENTIRE FILE)
+// Minimal changes only:
+// - adds Announcements tab
+// - adds toast system
+// - keeps your theme `t` everywhere
+// - passes showToast to Insights + Announcements (so your new screens can use it)
+
+import React, { useRef, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { THEMES } from "./themes";
 import { PROFILES } from "./data";
@@ -8,13 +15,14 @@ import SwipeScreen from "./screens/SwipeScreen";
 import MatchesScreen from "./screens/MatchesScreen";
 import LikedYouScreen from "./screens/LikedYouScreen";
 import InsightsScreen from "./screens/InsightsScreen";
+import AnnouncementsScreen from "./screens/AnnouncementsScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 
 import AuthStartScreen from "./screens/AuthStartScreen";
 import LoginScreen from "./screens/LoginScreen";
 import SignupWizardScreen from "./screens/SignupWizardScreen";
 
-type Page = "swipe" | "matches" | "liked" | "insights" | "profile";
+type Page = "swipe" | "matches" | "liked" | "insights" | "announcements" | "profile";
 type Profile = typeof PROFILES[number];
 
 const TABS: { id: Page; icon: string; label: string }[] = [
@@ -22,6 +30,7 @@ const TABS: { id: Page; icon: string; label: string }[] = [
   { id: "matches", icon: "💬", label: "Matches" },
   { id: "liked", icon: "👀", label: "Liked You" },
   { id: "insights", icon: "📊", label: "Insights" },
+  { id: "announcements", icon: "📢", label: "Updates" },
   { id: "profile", icon: "👤", label: "Profile" },
 ];
 
@@ -115,6 +124,16 @@ function RoomrAppShell({
   const [matches, setMatches] = useState<Profile[]>([]);
   const [showMatch, setShowMatch] = useState<Profile | null>(null);
 
+  // ✅ Toast (minimal add)
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<number | null>(null);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast(null), 3000);
+  };
+
   const handleMatch = (profile: Profile) => {
     if (profile.compatibility > 70) {
       setMatches((m) => [...m, profile]);
@@ -131,7 +150,11 @@ function RoomrAppShell({
           {page === "swipe" && <SwipeScreen t={t} onMatch={handleMatch} />}
           {page === "matches" && <MatchesScreen t={t} matches={matches} />}
           {page === "liked" && <LikedYouScreen t={t} onMatch={() => {}} />}
-          {page === "insights" && <InsightsScreen t={t} />}
+
+          {/* ✅ updated screens */}
+          {page === "insights" && <InsightsScreen t={t} showToast={showToast} />}
+          {page === "announcements" && <AnnouncementsScreen showToast={showToast} />}
+
           {page === "profile" && (
             <ProfileScreen t={t} theme={themeName} setTheme={setThemeName} />
           )}
@@ -177,6 +200,30 @@ function RoomrAppShell({
           ))}
         </div>
       </div>
+
+      {/* ✅ Toast overlay */}
+      {toast && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: 80,
+            left: 16,
+            right: 16,
+            background: "rgba(0,229,160,0.15)",
+            border: "1px solid rgba(0,229,160,0.35)",
+            borderRadius: 12,
+            padding: "10px 16px",
+            fontSize: 12,
+            fontWeight: 600,
+            color: "#00e5a0",
+            textAlign: "center",
+            zIndex: 150,
+            backdropFilter: "blur(8px)",
+          }}
+        >
+          {toast}
+        </div>
+      )}
 
       {/* Match Overlay */}
       {showMatch && (
