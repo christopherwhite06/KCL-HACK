@@ -46,9 +46,36 @@ export const PROFILES = [
 ];
 
 export const LIKED_YOU = [
-  { id: 10, name: "Sophie R.", age: 20, course: "Law", year: "2nd Year", avatar: "SR", color: "#fd79a8", compatibility: 79, bio: "Quiet studier, loves a clean house." },
-  { id: 11, name: "Amir H.", age: 22, course: "Engineering", year: "3rd Year", avatar: "AH", color: "#00cec9", compatibility: 85, bio: "Morning person, huge football fan, very tidy." },
-  { id: 12, name: "Chloe W.", age: 21, course: "Psychology", year: "2nd Year", avatar: "CW", color: "#e17055", compatibility: 71, bio: "Loves cooking for housemates, flexible schedule." },
+  {
+    id: 10, name: "Sophie R.", age: 20, course: "Law", year: "2nd Year",
+    uni: "University of Manchester", avatar: "SR", color: "#fd79a8", compatibility: 79,
+    bio: "Quiet studier, loves a clean house. Looking for calm housemates who respect shared spaces.",
+    lifestyleMatch: 81, propertyMatch: 76, budget: "£500–£650/mo", moveIn: "Sept 2025",
+    tags: ["Quiet", "Clean", "Early Bird", "Introvert"], epcGrade: "B", floodRisk: "Low",
+    hmoStatus: "Approved Zone", rentFairness: "-2% avg", commuteMin: 10,
+    societies: ["Law Society", "Book Club"], cleanliness: 5, guests: "Rarely",
+    smoking: false, drinking: false, studyStyle: "Library",
+  },
+  {
+    id: 11, name: "Amir H.", age: 22, course: "Engineering", year: "3rd Year",
+    uni: "University of Manchester", avatar: "AH", color: "#00cec9", compatibility: 85,
+    bio: "Morning person, huge football fan, very tidy. Love a good house meal on Sundays.",
+    lifestyleMatch: 88, propertyMatch: 80, budget: "£550–£700/mo", moveIn: "Aug 2025",
+    tags: ["Early Bird", "Gym Goer", "Social", "Tidy"], epcGrade: "C", floodRisk: "Low",
+    hmoStatus: "Approved Zone", rentFairness: "-1% avg", commuteMin: 14,
+    societies: ["Engineering Society", "Football Club"], cleanliness: 4, guests: "Occasionally",
+    smoking: false, drinking: true, studyStyle: "At home",
+  },
+  {
+    id: 12, name: "Chloe W.", age: 21, course: "Psychology", year: "2nd Year",
+    uni: "University of Manchester", avatar: "CW", color: "#e17055", compatibility: 71,
+    bio: "Loves cooking for housemates, flexible schedule. Always up for a spontaneous film night.",
+    lifestyleMatch: 74, propertyMatch: 68, budget: "£480–£620/mo", moveIn: "Sept 2025",
+    tags: ["Chef", "Social", "Night Owl", "Eco-Conscious"], epcGrade: "B", floodRisk: "Low",
+    hmoStatus: "Approved Zone", rentFairness: "+3% avg", commuteMin: 11,
+    societies: ["Psychology Society", "Food Society"], cleanliness: 3, guests: "Often",
+    smoking: false, drinking: true, studyStyle: "Café",
+  },
 ];
 
 export const EPC_COLORS: Record<string, string> = {
